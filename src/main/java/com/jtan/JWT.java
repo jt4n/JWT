@@ -80,6 +80,14 @@ public class JWT {
         return jwtToken;
     }
 
+    public static JSONObject jwtDecode(String jwt) {
+        byte[] sBytes = Base64.decodeBase64(jwt);
+        String s = new String(sBytes, StandardCharsets.UTF_8);
+        // "{"typ":"JWT","alg":"HS256"}" -> JSONObject
+        JSONObject r = JSON.parseObject(s);
+        return r;
+    }
+
     public static void testJSONEncodeBase64() {
         JSONObject header = new JSONObject(true);
         header.put("typ", "JWT");
@@ -113,8 +121,17 @@ public class JWT {
         ensure(r.equals(e), "testJWT");
     }
 
+    public static void testJwtDecode() {
+        String stringEncoded = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9";
+        JSONObject h = jwtDecode(stringEncoded);
+
+        ensure(h.get("typ").equals("JWT"), "testDecode1");
+        ensure(h.get("alg").equals("HS256"), "testDecode2");
+    }
+
     public static void main(String[] args) {
         // testJSONEncodeBase64();
         testJWT();
+        // testJwtDecode()
     }
 }
